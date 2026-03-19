@@ -1,0 +1,9 @@
+---
+Language: Cpp
+Standard: Latest
+BasedOnStyle: Google
+ColumnLimit: 120
+BreakBeforeBraces: Attach
+IndentWidth: 4
+AllowShortBlocksOnASingleLine: false
+---
