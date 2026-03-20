@@ -24,7 +24,7 @@ void cmd_comp(Nolb_Cmd* cmd, Nolb_Args* nargs) {
     cmd_append(cmd, "gcc-15");
     if (nargs->debug) cmd_append(cmd, "-g");
 }
-void cmd_flags(Nolb_Cmd* cmd) { cmd_append(cmd, "-Wall", "-Wextra", "-std=c23", "-pedantic"); }
+void cmd_flags(Nolb_Cmd* cmd) { cmd_append(cmd, "-Wall", "-Wextra", "-std=c23", "-pedantic", "-O3"); }
 void cmd_print(Nolb_Cmd* cmd) {
     char cs[1024] = {0};
     for (int i = 0; i < (int)cmd->count; ++i) {
@@ -33,9 +33,7 @@ void cmd_print(Nolb_Cmd* cmd) {
     }
     log_info("Running %s", cs);
 }
-void print_delim() {
-    printf("\n##############\n\n");
-}
+void print_delim() { printf("\n##############\n\n"); }
 /************/
 /*** MAIN ***/
 /************/
@@ -67,7 +65,7 @@ int main(int argc, char** argv) {
         cmd_append(&cmd, "./main");
         if (nargs.test && !nargs.debug) cmd_append(&cmd, "test");
         cmd_print(&cmd);
-        
+
         print_delim();
         if (run_cmd(&cmd) != 0) {
             log_error("Run failed");

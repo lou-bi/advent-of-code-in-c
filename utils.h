@@ -34,7 +34,7 @@ char* load_file(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
     FILE* fp = fopen(path, "r+");
-    fread(s, 1, len, fp);
+    if (fread(s, 1, len, fp) == 0) perror("fread");
 
     // trim right
     char* ptr = s + len - 1;
@@ -49,26 +49,40 @@ char* load_file(int argc, char** argv) {
     return s;
 }
 
-void str_split(char* buff[], char* in, char* sep) {
+void cstr_split(char* buff[], char* in, char* sep) {
     char* start = in;
     char* found;
+    int seplen = strlen(sep);
 
     int i = 0;
     while ((found = strstr(start, sep)) != NULL) {
         buff[i++] = start;
         *found = 0;
-        start = found + strlen(sep);
+        start = found + seplen;
+    }
+    buff[i++] = start;
+    buff[i] = NULL;
+}
+void cstr_split_any(char* buff[], char* in, char* sep) {
+    char* start = in;
+    char* found;
+
+    int i = 0;
+    while ((found = strpbrk(start, sep)) != NULL) {
+        buff[i++] = start;
+        *found = 0;
+        start = found + 1;
     }
     buff[i++] = start;
     buff[i] = NULL;
 }
 
-void str_rep(char* s, char rep, char with) {
+void cstr_rep(char* s, char rep, char with) {
     char* found = strchr(s, rep);
     *found = with;
 }
 
-void str_rep_all(char* s, char rep, char with) {
+void cstr_rep_all(char* s, char rep, char with) {
     char* start = s;
     char* found;
     while ((found = strchr(start, rep)) != NULL) {
