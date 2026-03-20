@@ -18,6 +18,13 @@
         printf("  took %Lf ms\n", t);                                                                                \
     } while (0)
 
+FILE* get_file(int argc, char** argv) {
+    const char* path = "input.txt";
+    if (argc == 2 && strcmp(argv[1], "test") == 0) path = "test.txt";
+    FILE* fp = fopen(path, "r+");
+    return fp;
+}
+
 char* load_file(int argc, char** argv) {
     const char* path = "input.txt";
     if (argc == 2 && strcmp(argv[1], "test") == 0) path = "test.txt";
