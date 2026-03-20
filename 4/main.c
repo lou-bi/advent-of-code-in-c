@@ -1,38 +1,46 @@
-#define _POSIX_C_SOURCE 199309L
-
 #include "../utils.h"
 
 #define LINE_LENGTH 64
 
-void part1(FILE* fp) {
-    int res = 0;
-    char line[LINE_LENGTH];
-    while (fgets(line, LINE_LENGTH, fp) != nullptr) {
-        /////////////
+void part1(char* input) {
+    char* arr[1024] = {0};
+    int i = 0, res = 0;
+    str_split(arr, input, "\n\n");
+
+    char* tofind[] = {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid", NULL};
+
+    while (arr[i] != NULL) {
+        bool ok = true;
+        int j = 0;
+        while (tofind[j] != NULL) {
+            if (strstr(arr[i], tofind[j]) == NULL) {
+                ok = false;
+                break;
+            }
+            j++;
+        }
+        if (ok) res++;
+
+        i++;
     }
+
+    /////////////
     printf("\nPart 1: %d\n", res);
 }
 
-void part2(FILE* fp) {
-    int res = 0;
-    char line[LINE_LENGTH];
-    while (fgets(line, LINE_LENGTH, fp) != nullptr) {
-        /////////////
-    }
+void part2(char* input) {
+    char* arr[8] = {0};
+    int i = 0, res = 0;
+    str_split(arr, input, "\n\n");
+    while (arr[i] != NULL) str_rep_all(arr[i++], '\n', ' ');
+
+    /////////////
     printf("\nPart 2: %d\n", res);
 }
 
 int main(int argc, char** argv) {
-    const char* path = "input.txt";
-    if (argc == 2 && strcmp(argv[1], "test") == 0) path = "test.txt";
+    char* input = load_file(argc, argv);
 
-    FILE* fp = fopen(path, "r");
-    if (fp == nullptr) {
-        printf("File does not exists: %s\n", path);
-        exit(EXIT_FAILURE);
-    }
-
-    TIMER(part1, fp);
-    fseek(fp, 0, SEEK_SET);
-    TIMER(part2, fp);
+    TIMER(part1, input);
+    TIMER(part2, input);
 }

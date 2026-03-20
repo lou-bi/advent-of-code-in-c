@@ -202,9 +202,9 @@ bool run_cmd(Nolb_Cmd* cmd) {
     int status;
     waitpid(pid, &status, 0);
 
-    if (WIFEXITED(status)) printf("Command exited with code: %d\n", WEXITSTATUS(status));
+    if (WIFEXITED(status) && WEXITSTATUS(status) != 0) printf("Command exited with code: %d\n", WEXITSTATUS(status));
 
-    return true;
+    return WEXITSTATUS(status);
 }
 
 #endif

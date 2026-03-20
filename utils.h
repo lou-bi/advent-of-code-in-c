@@ -1,8 +1,10 @@
 #define _GNU_SOURCE
 #define _POSIX_C_SOURCE 199309L
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -16,40 +18,61 @@
         printf("  took %Lf ms\n", t);                                                                                \
     } while (0)
 
-typedef struct {
-    FILE* handle;
-    long n_chars;
-    int n_lines;
-    char* content;
-} File_Object;
+char* load_file(int argc, char** argv) {
+    const char* path = "input.txt";
+    if (argc == 2 && strcmp(argv[1], "test") == 0) path = "test.txt";
 
-File_Object get_file(char* path) {
-    File_Object fo = {0};
-    FILE* f = fopen(path, "r");
-    if (f == nullptr) {
-        perror("fopen");
-        return fo;
+    struct stat st;
+    if (stat(path, &st) != 0) {
+        perror("stat");
+        exit(EXIT_FAILURE);
     }
-    fo.handle = f;
-    fseek(fo.handle, 0, SEEK_END);
-    fo.n_chars = ftell(fo.handle);
-    fseek(fo.handle, 0, SEEK_SET);
+    off_t len = st.st_size;
+    char* s = malloc(len);
+    if (s == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+    FILE* fp = fopen(path, "r+");
+    fread(s, 1, len, fp);
 
-    return fo;
+    // trim right
+    char* ptr = s + len - 1;
+    while (isspace(*ptr)) {
+        *ptr = '\0';
+        ptr--;
+    }
+
+    // trim left
+    while (isspace(*s)) s++;
+
+    return s;
 }
 
-void load_content(File_Object* f) {
-    char* c = (char*)malloc(sizeof(char) * f->n_chars + 1);
-    fread(c, 1, f->n_chars, f->handle);
-    f->content = c;
+void str_split(char* buff[], char* in, char* sep) {
+    char* start = in;
+    char* found;
+
+    int i = 0;
+    while ((found = strstr(start, sep)) != NULL) {
+        buff[i++] = start;
+        *found = 0;
+        start = found + strlen(sep);
+    }
+    buff[i++] = start;
+    buff[i] = NULL;
 }
 
-int get_n_of_lines(FILE* f) {
-    fseek(f, 0, SEEK_SET);
-    int c;
-    int nol = 0;
-    while ((c = fgetc(f)) != EOF) {
-        if (c == '\n') nol++;
+void str_rep(char* s, char rep, char with) {
+    char* found = strchr(s, rep);
+    *found = with;
+}
+
+void str_rep_all(char* s, char rep, char with) {
+    char* start = s;
+    char* found;
+    while ((found = strchr(start, rep)) != NULL) {
+        *found = with;
+        start = found;
     }
-    return nol;
 }

@@ -33,6 +33,9 @@ void cmd_print(Nolb_Cmd* cmd) {
     }
     log_info("Running %s", cs);
 }
+void print_delim() {
+    printf("\n##############\n\n");
+}
 /************/
 /*** MAIN ***/
 /************/
@@ -49,29 +52,28 @@ int main(int argc, char** argv) {
     if (folder_already_exists(&nargs)) {
         char* in = construct_string("%s/main.c", nargs.day);
         char* out = construct_string("%s/main", nargs.day);
-
         cmd_comp(&cmd, &nargs);
         cmd_flags(&cmd);
         cmd_append(&cmd, "-o", out);
         cmd_append(&cmd, in);
         cmd_print(&cmd);
-
-        if (!run_cmd(&cmd)) {
+        if (run_cmd(&cmd) != 0) {
             log_error("Build failed");
             exit(EXIT_FAILURE);
         }
         cmd.count = 0;
         chdir(nargs.day);
-
         if (nargs.debug) cmd_append(&cmd, "gdb");
         cmd_append(&cmd, "./main");
         if (nargs.test && !nargs.debug) cmd_append(&cmd, "test");
         cmd_print(&cmd);
-
-        if (!run_cmd(&cmd)) {
+        
+        print_delim();
+        if (run_cmd(&cmd) != 0) {
             log_error("Run failed");
             exit(EXIT_FAILURE);
         }
+        print_delim();
 
     } else {
         scaffold(&nargs);
