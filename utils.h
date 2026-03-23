@@ -24,7 +24,7 @@ FILE* get_file(int argc, char** argv) {
     FILE* fp = fopen(path, "r+");
     return fp;
 }
-
+// Return trimed file
 char* load_file(int argc, char** argv) {
     const char* path = "input.txt";
     if (argc == 2 && strcmp(argv[1], "test") == 0) path = "test.txt";
@@ -41,7 +41,7 @@ char* load_file(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
     FILE* fp = fopen(path, "r+");
-    if (fread(s, 1, len, fp) == 0) perror("fread");
+    if (fread(s, 1, len, fp) == 0) perror("fopen");
 
     // trim right
     char* ptr = s + len - 1;
@@ -55,9 +55,9 @@ char* load_file(int argc, char** argv) {
 
     return s;
 }
-
-void cstr_split(char* buff[], char* in, char* sep) {
-    char* start = in;
+// Split input by sep into buff, NULL terminated
+void cstr_split(char* buff[], char* input, char* sep) {
+    char* start = input;
     char* found;
     int seplen = strlen(sep);
 
